@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block 'links' %}
+    <link rel="stylesheet" href="{% static 'tables/home.css' %}">
+
+{% endblock %}
+
+{% block 'title' %}
+    <title>{{ user.username }}'s Page</title>
+{% endblock %}
+
+{% block 'body' %}
+
+<form method="POST" id="addProductForm">
+    {% csrf_token %}
+    <div id="addProductDiv">
+        <div id="ProductInputs">
+            <br>
+            <p>Ապրանքի անունը</p>
+            <input type="text" name="productName" style="display: block; width: 50%; margin: auto; height: 30px;"><br>
+            <p>Ապրանքի գինը</p>
+            <input type="number" name="productPrice" style="display: block; width: 50%; margin: auto; height: 30px;"><br>
+            <p>Հաճախորդ(ներ)</p>
+            <select name="customer" multiple style="width: 50%; height: 60px;">
+                <option value="all">all</option>
+                {% for i in Users %}
+                    <option value="{{i.username}}">{{i.username}}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <p>Մատակարարող</p>
+            <select name="supplier" style="width: 50%; height: 40px;">
+                {% for i in Suppliers %}
+                    <option value="{{i.username}}">{{ i.username }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <button type="submit" id="saveButton" style="width: 50%;--c: rgb(93, 93, 202); height:40px;background-color: #3498db82;">Ավելացնել</button>
+        </div>
+    </div>
+</form>
+
+
+    <br><br><br>
+
+    <table id="adminTable">
+        <thead style="word-wrap: break-word;">
+            <tr>
+                <th>Մատակարարող</th>
+                <th>Հաճախորդ</th>
+                <th>Ապրանք</th>
+                <th>Գին</th>
+                <th>Ջնջել</th>
+                <th>Փոփոխել</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in Items %}
+                <tr>
+                    <td>{{ i.supplier }}</td>
+                    <td>{{ i.customer }}</td>
+                    <td>{{ i.productName }}</td>
+                    <td>{{ i.productPrice }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'delete_item' i.id %}">
+                            {% csrf_token %}
+                            <button type="submit" id="saveButton" class="svB">Ջնջել</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_item' i.id %}"><button id="saveButton" class="svB">Փոփոխել</button></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% block 'scripts' %}
+ 
+<script src="{% static 'tables/multipleSelect.js' %}"></script>
+    
+{% endblock %}
+
+
+{% endblock %}

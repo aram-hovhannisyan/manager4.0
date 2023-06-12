@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'links' %}
+    <link rel="stylesheet" href="{% static 'tables/home.css' %}">
+{% endblock %}
+
+
+{% block 'title' %}
+    <title>Customers</title>
+{% endblock %}
+<body>
+    
+
+{% block 'body' %}
+ 
+<table>
+    <thead><tr><th><h1 style="text-align:center;">Հաճախորդներ</h1></th></tr></thead>
+    <tbody>
+        <tr>
+            <td>
+                <a href="{% url 'productsforall' %}" class="toCustPage"><h1>all</h1></a>
+            </td>
+        </tr>
+        {% for customer in allCustomers %}
+        <tr>
+            <td>
+                <a href="{% url 'customersproducts' customer.id %}" class='toCustPage'><h1>{{ customer.username }}</h1></a><br>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

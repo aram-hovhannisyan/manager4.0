@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block 'links' %}
+    <link rel="stylesheet" href="{% static 'tables/home.css' %}">
+{% endblock %}
+
+
+{% block 'title' %}
+    <title>Salaries</title>
+{% endblock %}
+
+{% block 'body' %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Ամսաթիվ</th>
+            <th>Հաճախորդ</th>
+            <th>Գումար</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in Sal %}
+            <tr>
+                <td style="font-size: 15px;">{{i.date|format_date}}</td>
+                <td>{{i.customer}}</td>
+                <td>{{i.salary}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}

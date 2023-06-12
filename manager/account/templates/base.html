@@ -1,0 +1,73 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'tables/header.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/tables-512.png' %}">
+    {% block 'links' %}
+
+    {% endblock%}
+
+    {% block 'title' %}
+
+    {% endblock %}
+</head>
+<body style="background-image: url({% static 'img/background.jpg' %});">
+    <header style="background-image: url({% static 'img/background.jpg' %});">
+      <nav>
+
+        {% if user.is_authenticated  %}
+            {% block header %}
+                {% if header.lenght > 0 %}
+                    {{ header }}
+                {% else %}
+                    <h1 style="color:white;">Բարի Գալուստ {{user}}</h1>
+                {% endif %}
+            {% endblock %}
+        {% endif %}
+        {% if user.is_admin %}
+            <a href="{% url 'adminpage' %}">Գլխավոր</a>
+            <a href="{% url 'customersforadmin' %}">Հաճախորդներ</a>
+        {% elif user.is_employee %}
+            <a href="{% url 'employee' %}">Գլխավոր</a>
+        {% elif user.is_customer %}
+            <a href="{% url 'customer' %}">Գլխավոր</a>
+        {% elif user.is_supplier %}
+            <a href="{% url 'supplier' %}">Գլխավոր</a>
+        {% endif %}
+        {% if user.is_employee %}
+            {% block nav %}
+                {% if nav.lenght > 0 %}
+                    {{ nav }}
+                {% else %}
+                    <a href="{% url 'customers' %}">Աշխատանք</a>
+                {% endif %}
+            {% endblock %}
+        {% elif user.is_customer %}
+            <a href="{% url 'tablesbyuser' %}">Ցուցակներ</a>
+        {% elif user.is_supplier %}
+            <a href="{% url 'orderedProducts' %}">Դատարկ</a>
+        
+        {% endif %}
+        <a href="{% url 'logout' %}">Ելք</a>
+      </nav>
+
+    </header>
+    <br>
+    <br>
+    <br>
+
+
+    {% block 'body'%}
+
+    {% endblock %}
+
+    {% block 'scripts' %}
+    
+    {% endblock %}
+</body>
+</html>

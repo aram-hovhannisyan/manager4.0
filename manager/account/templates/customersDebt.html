@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load custom_filters %}
+
+{% block 'links' %}
+<link rel="stylesheet" href="{% static 'tables/home.css' %}">
+
+{% endblock %}
+
+{% block 'title' %}
+    <title>{{customer}}'s Debt</title>
+{% endblock %}
+
+{% block header %}
+    <h1 style="color:white;">{{customer}}'s Debt</h1>
+{% endblock %}
+
+{% block 'body' %}
+<table style="text-align: center;" id="debtTable">
+    <thead style="text-align: center;">
+        <tr>
+            <th style="text-align: center;">Date</th>
+            {% for supplier in Suppliers %}
+                <th style="text-align: center;">{{ supplier.username }}</th>
+            {% endfor %}
+            <th style="text-align: center;">Paid</th>
+        </tr>
+    </thead>
+    <tbody id="debtBody">
+        {% for row in debt_row %}
+            <tr>
+                <td title="{{ row.timeOfCreating|format_datetime }}" style="font-size: 12px;word-wrap: break-word"">{{ row.date|format_date }}</td>
+                {% for supplier in Suppliers %}
+                    {% if supplier == row.supplier %}
+                        {% if row.debt < 0 %}
+                            <td style="color: red;">{{ row.debt }}</td>
+                        {% else %}
+                            <td>{{ row.debt }}</td>
+                        {% endif %}
+                    {% else %}
+                        <td>0</td>
+                    {% endif %}
+                {% endfor %}
+                {% if row.supplier %}
+                    <td>0</td>
+                {% elif row.seen %}
+                    <td style="color: green;" id="changePaymant{{ row.id }}" onclick="toggleSeen('{{ row.id }}')">{{ row.debt }} ✓</td>
+                {% elif not row.seen %}
+                    <td style="color: red;" id="changePaymant{{ row.id }}" onclick="toggleSeen('{{ row.id }}')">{{ row.debt }} ✕</td>
+                {% elif row.is_return and not row.seen %}
+                    <td style="color: rgb(131, 0, 0);font-weight: bold;" onclick="toggleSeen('{{ row.id }}')">{{row.debt}} ✕</td>
+                {% elif row.is_return and row.seen %}
+                    <td style="color: rgb(11, 58, 2);font-weight: bold;" onclick="toggleSeen('{{ row.id }}')">{{row.debt}} ✓</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        <tr style="text-align: center; font-weight: bold;">
+            <td style="color: red; border-top: 2px solid black;">Total</td>
+            {% for supplier in Suppliers %}
+                <td style="color: red; border-top: 2px solid black;"></td>
+            {% endfor %}
+            <td style="color: red; border-top: 2px solid black;" id="totalCell">{{payed}}({{total}})</td>
+        </tr>    
+    </tr>
+    </tbody>
+</table>
+
+{% block 'scripts' %}
+<!-- <script src="{%static 'js/employee/customerDebtTotal.js'%}"></script> -->
+<script src="{% static 'js/customer/addTotalForTable.js'%}"></script> 
+<script src="{% static 'js/employee/toggleSeen.js' %}"></script>
+{% endblock %}
+{% endblock  %}

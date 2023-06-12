@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'links' %}
+    <link rel="stylesheet" href="{% static 'tables/responsive.css'%}">
+{% endblock %}
+{% block 'title' %}
+<title>Orders</title>
+{% endblock %}
+{% block header %}
+    <h1 style="color:white;">{{supplier.username}}</h1>
+{% endblock %}
+{% block 'body' %}
+
+{% for table in Tables %}
+
+<table>
+    <thead>
+        <tr>   
+            <th>Products</th> 
+        {% for column in Columns_of_Table %}   
+            {% if column.parent_Table == table %}
+                <th>{{column.table.user.username}}</th>   
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in Products %}
+            {% if product.supplier == table.supplierof_Table.username %}
+            <tr>
+                <td>{{product.productName}}</td>
+                {% for column in Columns_of_Table %}
+                    {% for row in TableRows %}
+                        {% if column.parent_Table == table and row.table == column.table and row.product_name == product.productName %}
+                            {% if row.product_count %}
+                                <td>{{row.product_count}}</td>
+                            {% else %}
+                                <td>0</td>
+                            {% endif %}
+                        {% elif row.product_name == product.productName and column.parent_Table == table and row.table == column.table %}
+                            <td>0</td>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+<br><br><br>
+{% endfor %}
+{% endblock %}
+
+{% block 'scripts' %}
+<script src="{% static 'js/supplier/addTotalforOrder.js' %}"></script>
+{% endblock %}

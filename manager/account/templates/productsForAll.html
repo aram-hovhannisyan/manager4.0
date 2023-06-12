@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block 'links' %}
+<link rel="stylesheet" href="{% static 'tables/home.css' %}">
+{% endblock %}
+
+{% block 'title' %}
+    <title>For Everybody</title> 
+{% endblock %}
+
+
+{% block 'body' %}
+    <table id="adminTable">
+        <thead>
+            <tr>
+                <th>Հաճախորդ</th>
+                <th>Ապրանք</th>
+                <th>Գին</th>
+                <th>Ջնջել</th>
+                <th>Փոփոխել</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in products %}
+                <tr>
+                    <td>{{ i.customer }}</td>
+                    <td>{{ i.productName }}</td>
+                    <td>{{ i.productPrice }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'delete_item_all' i.id %}">
+                            {% csrf_token %}
+                            <button type="submit" id="saveButton" class="svB">Ջնջել</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_item' i.id %}"><button id="saveButton" class="svB">Փոփոխել</button></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

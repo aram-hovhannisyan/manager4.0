@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'links' %}
+    <link rel="stylesheet" href="{% static 'tables/home.css' %}">
+{% endblock %}
+
+
+{% block 'title' %}
+    <title>Work</title>
+{% endblock %}
+
+{% block 'body'%}
+
+{% block nav %}
+<a href="{% url 'salaries' %}">Մուծումներ</a>
+
+{% endblock %}
+
+<div class="salary">
+    <h1>Աշխատավարձ</h1>
+        <br>
+        <form action="{% url 'sendSalary' %}" method="post">
+            {% csrf_token %}
+            <select name="customer" class="salarySelect">
+                {% for customer in allCustomers %}
+                    <option value="{{customer.username}}">{{customer}}</option>
+                {% endfor %}
+            </select><br><br>
+            <input type="date" id="inputDate" class="salaryInput" name="date">
+            <br><br>
+            <h3>Գումար</h3>
+            <input type="number" name="salary" class="salaryInput"><br><br>
+            <button type="submit" class="salaryButton">Ուղարկել</button>
+        </form>
+</div>
+<br><br><br>
+
+
+<table style="width: 300px; text-align: center;font-size: 25px;">
+    <thead>
+        <tr><th style="text-align: center;">Մատակարարողներ</th></tr>
+    </thead>
+    <tbody>
+        {% for i in allSuppliers %}
+            <tr><td><a href="{% url 'myorders' i.id %}" style="font-size: 25px;">{{i.username}}</a></td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br><br><br>
+<table style="text-align: center;">
+    <thead>
+        <tr>
+            <th style="text-align: center;" id="trtd">
+                <h1>Հաճախորդ</h1>
+            </th>
+            <th style="text-align: center;" id="trtd">
+                <h1>Պարտք</h1>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in debts %}
+            {% if i.2 %}
+                <tr style="font-size: 18px;">
+                    <td><h1><a href="{% url 'customertables' i.0.id %}" class="toCustPage">{{i.0}}</a></h1></td>
+                    <td><h1><a class="toCustPage" href="{% url 'customersDebt' i.0.id %}">{{i.1}}</a></h1></td> 
+                </tr>
+            {% else %}
+                <tr style="font-size: 18px;">
+                    <td><h1><a href="{% url 'customertables' i.0.id %}" class="toCustPage">{{i.0}}</a></h1></td>
+                    <td><h1><a class="toCustPage" style="color:red;" href="{% url 'customersDebt' i.0.id %}">{{i.1}}  ✕</a></h1></td> 
+                </tr>
+            {% endif %}
+        {% endfor %}
+        <tr>
+            <td style="color: red; border-top: 2px solid red;font-size: 25px;">Ընդհանուր</td>
+            <td style="color: red; border-top: 2px solid red;font-size: 25px;" id="TotalDebt"></td>
+        </tr>
+    </tbody>
+</table>
+
+{% block 'scripts' %}
+<script src="{% static 'js/employee/totalDebt.js' %}"></script>
+<script src="{% static 'js/employee/salary.js' %}"></script>
+<script src="{% static 'js/customer/inputDate.js' %}"></script>
+
+{% endblock%}
+{% endblock %}

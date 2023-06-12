@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'links' %}
+  <link rel="stylesheet" href="{% static 'tables/responsive.css'%}">
+{% endblock %}
+
+{% block 'title' %}
+  <title>Employee Page</title>
+{% endblock%}
+
+{% block 'body' %}
+  <main class="container">
+  
+    {% for supplier in Suppliers %}
+      <div class="table-heading-div">
+        <h1 style="width: auto;">{{ supplier.username }}</h1>
+        <br>
+        <div class="change">
+          <button class="remove-Button{{supplier.id}}" id="changeSend">Փոխել</button>
+          <button class="" onclick="sendOrder('{{supplier.id}}','{{supplier.username}}')" id="changeSend">Ուղարկել</button>
+        </div>
+      </div> 
+      <br><br><br>
+
+      <table class="big-table" id="{{supplier.id}}">
+        <thead>
+          <tr>
+            <th>Ապրանք</th>
+            {% for bigtable in BigTables %}
+              {% if bigtable.supplier == supplier %}
+                <th colspan="2" class="colspan2">{{ bigtable.user }}</th>
+              {% endif %}
+            {% endfor %}
+            <th class="total-column" colspan="2">Ընդհանուր</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for product in Products %}
+
+            {% if product.supplier == supplier.username %}
+            <tr>
+              <td>{{product.productName}}</td>
+              {% for bigtable in BigTables %}
+                {% if bigtable.supplier.username == supplier.username %}
+                  <td>
+                    {% for row in TableRows %}
+                      {% if row.product_name == product.productName and row.table == bigtable.table and row.table.user == bigtable.table.user %}
+                        {{ row.product_count }}
+                      {% endif %}
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for row in TableRows %}
+                      {% if row.product_name == product.productName and row.table == bigtable.table and row.table.user == bigtable.table.user %}
+                        {{ row.total_price }}
+                      {% endif %}
+                    {% endfor %}
+                  </td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+      <br><br><br>
+    {% endfor %}
+
+
+  </main>
+
+{% endblock %}
+
+{% block 'scripts' %}
+<script src="{% static 'tables/addRowsColumns.js'%}"></script>
+<script src="{% static 'js/employee/removeColumns.js' %}"></script>
+<script src="{% static 'js/employee/sendOrder.js' %}"></script>
+{% endblock %}

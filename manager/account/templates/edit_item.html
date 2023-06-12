@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block 'links' %}
+  <link rel="stylesheet" href="{% static 'tables/home.css' %}">
+{% endblock %}
+
+{% block 'title'%}
+  <title>Edit the product</title>
+{% endblock %}
+
+{% block 'body' %}
+    <!-- <h1> hello {{ user.username }} your role is admin</h1> -->
+    <!-- <h1>Edit Item</h1> -->
+    <!-- <form method="POST">
+      {% csrf_token %}
+      <input type="text" name="productName" value="{{ item.productName }}">
+      <input type="number" name="productPrice" value="{{ item.productPrice }}">
+      <button type="submit">Update</button>
+    </form> -->
+    {% if customerPage == 'all' %}
+      <h1>all</h1>
+    {% else%}
+      <h1>{{ customerPage.username }}</h1>
+    {% endif %}
+    <form method="POST" id="addProductForm">
+      {% csrf_token %}
+      <div id="addProductDiv">
+          <div id="ProductInputs">
+              <br>
+              <p>Ապրանքի անունը</p><input type="text" name="productName" value="{{ item.productName}}" style="display: block; width: 50%;margin: auto;height: 30px;"><br>
+              <p>Ապրանքի գինը</p><input type="number" name="productPrice" value="{{ item.productPrice }}" style="display: block; width: 50%;margin: auto;height: 30px;"><br>
+              <p>Հաճախորդ</p>
+              <select name="customer" value="{{ item.customer }}" style="width: 50%; height: 40px;">
+                  <option value="all">all</option>
+                  {% for i in Users %}
+                    {% if i.username == item.customer %}
+                      <option value="{{ i.username }}" selected>{{i.username}}</option>
+                    {% else %}
+                      <option value="{{ i.username }}">{{i.username}}</option>
+                    {% endif %}
+                  {% endfor %}
+              </select>
+              <p>Մատակարարող</p>
+              <select name="supplier" style="width: 50%; height: 40px;">
+                {% for i in Suppliers %}
+                  {% if i.username == item.supplier %}
+                    <option value="{{i.username}}" selected>{{ i.username }}</option>
+                  {% else %}
+                    <option value="{{i.username}}">{{ i.username }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+              <br><br>
+              <button onclick="goBack()" type="submit" id="saveButton" style="width: 50%;--c: rgb(93, 93, 202); height:40px;background-color: #3498db82;">Թարմացնել</button>
+
+          </div>
+      </div>
+  </form>
+
+
+{% block 'scripts' %}
+
+<script>
+  function goBack() {
+    window.history.back();
+  }
+</script>
+
+{% endblock %}
+
+{% endblock %}

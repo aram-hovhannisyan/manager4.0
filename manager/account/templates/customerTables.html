@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load custom_filters %}
+
+{% block 'links' %}
+<link rel="stylesheet" href="{% static 'tables/home.css' %}">
+
+{% endblock %}
+
+
+
+{% block 'title' %}
+    <title>{{customer}}'s Tables</title>
+{% endblock %}
+
+{% block header %}
+    <h1 style="color:white;">{{customer}}'s Tables</h1>
+{% endblock %}
+
+{% block 'body' %}
+
+<main class="container">
+
+    {% for table in tables %}
+        
+          <table id="myTable">
+               </thead>
+                <thead>
+                    <tr>
+                        <th>
+                            Ապրանք
+                        </th>
+                        <th>
+                            Քանակ
+                        </th>
+                        <th>
+                            Գին
+                        </th>
+                        <th>
+                            Ընդհանուր
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in Rows %}
+                    {% if table.tableName == row.table.tableName %}
+                        <tr>
+                            <td>
+                                <h3>{{ row.product_name }}</h3>
+                            </td>
+                            <td>
+                                <h3>{{ row.product_count }}</h3>
+                            </td>
+                            <td>
+                                <h3>{{ row.product_price }}</h3>
+                            </td>
+                            <td id="total_price">
+                                <h3>{{ row.total_price }}</h3>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody> 
+                <tfoot>
+                    <tr class="footer">
+                      <td colspan="2">{{ table.timeOfCreating|format_datetime }}</td>
+                      <td>Ընդհանուր</td>
+                      <td id="totalPrice"></td>
+                    </tr>
+                  </tfoot>           
+            </table>
+            <br>
+            <br>
+            <br>
+    {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if tables.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ tables.previous_page_number }}">&lsaquo; prev</a>
+            {% endif %}
+
+            <span class="current-page">
+                Page {{ tables.number }} of {{ tables.paginator.num_pages }}
+            </span>
+
+            {% if tables.has_next %}
+                <a href="?page={{ tables.next_page_number }}">next &rsaquo;</a>
+                <a href="?page={{ tables.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</main>
+
+{% block 'scripts' %}
+<script>
+    // loop through all tables with id 'myTable'
+    document.querySelectorAll('table[id^="myTable"]').forEach(function(table) {
+    let total = 0;
+    // loop through all total_price cells in the current table and add their value to the total
+    table.querySelectorAll('#total_price').forEach(function(cell) {
+        total += parseInt(cell.textContent);
+    });
+    // set the total value in the appropriate #totalPrice cell
+    table.querySelector('#totalPrice').textContent = total;
+    });
+</script>
+{% endblock %}
+
+{% endblock %}
