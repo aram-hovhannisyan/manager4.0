@@ -1,0 +1,83 @@
+.container {
+    /* margin: 5% 3%; */
+    width: 80%;
+    height: auto;
+    margin: auto;
+  }
+  
+  
+  .responsive-table {
+    width: 100%;
+    border-spacing: 0;
+  }
+  
+  .responsive-table thead {
+    height: 80px;
+    /* width: 1px; */
+  }
+  
+  .responsive-table thead th {
+    background-color: #26890d;
+    border: 1px solid black;
+    /* border: 1px solid #86bc25; */
+    font-weight: normal;
+    text-align: center;
+    color: white;
+    font-size: 35px;
+  }
+  
+  .responsive-table tbody td {
+    border-top: 0px;
+    border: 1px solid black;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+    height: 60px;
+  }
+  
+  .responsive-table thead tr th {
+    width: 25%;
+  }
+  .responsive-table tbody tr td {
+    width: 25%;
+  }
+  .responsive-table tbody tr td:first-child{
+    background-color: aqua;
+    font-size: 25px;
+  }
+  .responsive-table tfoot td {
+    border-top: 0px;
+    background-color: #86bc25;
+    border: 1px solid black;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+    height: 60px;
+  }
+  
+  .responsive-table tfoot tr td {
+    width: 25%;
+    /* background-color: 1px solid #86bc25; */
+  
+  }
+  
+  
+  @media (max-width: 720px) {
+    .container{
+      width: 100%;
+    }
+    *{
+      margin: 0;
+      padding: 0;
+    }
+  }
+  .productCount{
+    /* border-top: 0px; */
+    /* border: 1px solid black; */
+    /* font-weight: bold; */
+    text-align: center;
+    color: black;
+    height: 80%;
+    width: 80%;
+    border: 0px;
+  }

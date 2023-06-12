@@ -1,0 +1,32 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+.form-div{
+  width: 300px;
+  margin: auto;
+  height: 400px;
+  background-color: rgba(37, 128, 128, 0.397);
+  text-align: center;
+  border-radius: 15px;
+  border: 2px solid black;
+}
+.form-div form {
+  width: 100%;
+  height: 50%;
+}
+.form-div form p label{
+  display: block;
+  font-size: 22px;
+  padding: 12px;
+}
+.form-div form input{
+  height: 30px;
+} 
+.form-div form button{
+  width: 30%;
+  height: 30px;
+  background-color: white;
+  position: relative;
+  top: 20px;
+}
