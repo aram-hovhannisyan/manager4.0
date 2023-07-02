@@ -1,7 +1,7 @@
 // Wait for the document to load
 document.addEventListener('DOMContentLoaded', function() {
     // Get all the debt table cells
-    var debtCells = document.querySelectorAll('tbody td:nth-child(2) a');
+    var debtCells = document.querySelectorAll('tbody td:nth-child(2) p');
 
     // Variable to store the total debt
     var totalDebt = 0;

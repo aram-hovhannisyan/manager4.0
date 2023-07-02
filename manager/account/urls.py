@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 from tables.views import (
     save_table_data,
-    Paymant,
-    Return,
+    Paymant_View,
+    # Return,
     sendOrder
     )
 
@@ -31,22 +31,23 @@ urlpatterns = [
     path('customersforAdmin/', views.allCustomersforAdmin, name='customersforadmin'),
     
     path('customerproducts/<int:user_id>/', views.customersProducts, name = 'customersproducts'),
-    path('productsforall', views.productsForAll, name = 'productsforall'),
+    path('productsforall/', views.productsForAll, name = 'productsforall'),
     
-    path('paymant/', Paymant, name = 'paymant'),
-    path('return/', Return, name = 'return'),
+    path('paymant/', Paymant_View, name = 'paymant'),
+    # path('return/', Return, name = 'return'),
 
 
-    path('debt/<int:user_id>/', views.customerDebt, name = 'customersDebt'),
+    # path('debt/<int:user_id>/', views.customerDebt, name = 'customersDebt'),
 
     path('supplier/', views.supplier, name="supplier"),
     path('supplier/orderedProducts/', views.orderedProducts, name="orderedProducts"),
 
 
-    path('toggle-seen/<int:debt_id>/', views.toggle_seen, name='toggle_seen'),
+    # path('toggle-seen/<int:debt_id>/', views.toggle_seen, name='toggle_seen'),
     path('employee/sendorder/', sendOrder, name="sendOrder"),
 
     path('myorders/<int:supplier_id>/', views.myOrders, name="myorders"),
-    path('sendsalary/', views.sendSalary, name='sendSalary'),
-    path('salaries/', views.salaries, name='salaries')
+    # path('sendsalary/', views.sendSalary, name='sendSalary'),
+    # path('salaries/', views.salaries, name='salaries')
+    path('totalPage/', views.totalPage, name='totalPage')
 ]

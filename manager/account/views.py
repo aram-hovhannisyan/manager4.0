@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SignUpForm, LoginForm, ItemAddForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-
+from django.db.models import Q
 # Create your views here.
 from django.contrib.auth.decorators import login_required
 from tables.models import (
@@ -13,7 +13,13 @@ from tables.models import (
     Debt,
     Ordered_Products_Column,
     Ordered_Products_Table,
-    Salary
+    # Salary,
+    JoinedTables,
+    Paymant,
+    Week_debt,
+    Global_Debt,
+    Old_debt,
+    BigTableRows
 )
 from account.models import (
     User
@@ -84,42 +90,117 @@ def customer(request):
     items = ItemsModel.productsfor_Customer(request.user)
 
     tableRows = TableItem.objects.all()
-    suppliers = User.objects.filter(is_supplier = True)
-    # print(tableRows)
-    # for i in items: 
-    #     print(i.customer)
+    joinedTables = User.objects.filter(is_supplier=True, username__in=["Կիրովական", "Արտադրամաս"])
+    suppliers = User.objects.filter(is_supplier=True).exclude(username__in=joinedTables.values('username')) 
+
     return render(request, 'customer.html', {
         'Items': items,
         'Tables': tablesUsers,
         'TableRows': tableRows,
-        'Suppliers': suppliers
+        'Suppliers': suppliers,
+        "joinedSuppliers": joinedTables
         })
+
 
 @customer_required
 def tablesByUser(request):
-    tablesbyUser = UserTable.objects.filter(user = request.user)
-    tableRows = TableItem.objects.all()
-    
-    paginator = Paginator(tablesbyUser, 5) # show 10 tables per page
+    tableRows = TableItem.objects.filter(customer=request.user)  # shat a dandaxacnelu heto
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+
+    tablesbyUser = UserTable.objects.filter(
+        user=request.user, 
+        singleTable__isnull=True
+        ).order_by('timeOfCreating')  # Reverse the order by 'timeOfCreating'
+    tablePaginator = Paginator(tablesbyUser, 10)  # show 10 tables per page
+    table_page_obj = tablePaginator.get_page(page_number)
+    reversed_table_page_obj = tablePaginator.get_page(
+        tablePaginator.num_pages - table_page_obj.number + 1
+        )  # Reversed table_page_obj
+
+    singleTables = UserTable.objects.filter(
+        user= request.user,
+        singleTable__isnull = False
+    ).order_by('timeOfCreating')
+    singlePaginator = Paginator(singleTables, 1) #show 1 tables per page
+    single_page_obj = singlePaginator.get_page(page_number)
+    reversed_single_page_obj = singlePaginator.get_page(
+        singlePaginator.num_pages - single_page_obj.number + 1
+    )
+
+    joinedTables = JoinedTables.objects.filter(
+        customer=request.user,
+        ).order_by('timeOfCreating')  # Reverse the order by '-id'
+    joinPaginator = Paginator(joinedTables, 5)  # show 5 joinedTables per page
+    join_page_obj = joinPaginator.get_page(page_number)
+    reversed_join_page_obj = joinPaginator.get_page(
+        joinPaginator.num_pages - join_page_obj.number + 1
+        )  # Reversed join_page_obj
+    reversed_join_page_obj =  reversed_join_page_obj.__reversed__()
+
+    joineddebt = Debt.objects.filter(
+        customer = request.user,
+        joined = True
+        ).order_by('timeOfCreating')
+    joineddebtPaginator = Paginator(joineddebt, 5) #show 5 debts per page of the joined tables
+    joineddebt_page_obj = joineddebtPaginator.get_page(page_number)
+    reversed_joined_debt_obj = joineddebtPaginator.get_page(
+        joineddebtPaginator.num_pages - joineddebt_page_obj.number + 1
+    )
+
+    singleddebt = Debt.objects.filter(
+        customer = request.user,
+        single = True
+        ).order_by('timeOfCreating')
+    singledebtPaginator = Paginator(singleddebt, 1) #show 5 debts per page of the singled tables
+    singledebt_page_obj = singledebtPaginator.get_page(page_number)
+    reversed_single_debt_obj = singledebtPaginator.get_page(
+        singledebtPaginator.num_pages - singledebt_page_obj.number + 1
+    )
+
+    try:
+        weekPaymant = Paymant.objects.get(
+            customer = request.user,
+            date = reversed_single_debt_obj[0].date
+        )
+    except:
+        weekPaymant = Paymant.objects.none()
     
-    debt = Debt.objects.filter(customer = request.user)
+    try:
+        week_debt = Week_debt.objects.get(
+            customer = request.user,
+            date = reversed_single_debt_obj[0].date
+        )
+    except:
+        week_debt = Week_debt.objects.none()
+    
+    try:
+        old_debt = Old_debt.objects.get(
+            customer = request.user,
+            date = reversed_single_debt_obj[0].date
+        )
+        # print('Hello')
+    except:
+        old_debt = Old_debt.objects.none()
+        # print('Good bye')
 
-    suppliers = User.objects.filter(is_supplier = True)
-
-    total = int(Debt.sumOfEveryUser(request.user))
-    payed = int(Debt.payed(request.user))
-
+    try:
+        globalDebt = Global_Debt.objects.filter(customer = request.user).latest('timeOfCreating')
+    except:
+        globalDebt = Global_Debt.objects.none()
 
     return render(request, 'tablesbyUser.html', {
-        'tables':page_obj,
-        'Rows':tableRows,
-        'debt_row': debt,
-        'Suppliers': suppliers,
-        'total': total,
-        'payed':payed
-        })
+        'table': join_page_obj,
+        'tables': reversed_table_page_obj,
+        'joins': reversed_join_page_obj,
+        'Rows': tableRows,
+        'singleTables': reversed_single_page_obj,
+        'joinedDebt': reversed_joined_debt_obj,
+        'singleDebt': reversed_single_debt_obj,
+        'weekPaymant': weekPaymant,
+        'weekDebt': week_debt,
+        'oldDebt': old_debt,
+        'globalDebt': globalDebt
+    })
 
 # ========================== Customer End  ===================
 
@@ -130,11 +211,12 @@ def employee(request):
 
     # tablesUsers = UserTable.objects.all()
     # items = ItemsModel.objects.all()
-    tableRows = TableItem.objects.all()
+    # tableRows = TableItem.objects.all()
+    tableRows = BigTableRows.objects.all()
     bigTables = BigTable.objects.all()
     suppliers = User.objects.filter(is_supplier = True)
 
-    uniq = ItemsModel.uniqueProductNames()
+    uniq = ItemsModel.uniqueProductNames(None)
     # for row in tableRows:
     #     print(row.product_name ,row.total_price)
     return render(request, 'employee.html', {
@@ -152,75 +234,166 @@ def allCustomers(request):
     debts = []
     allCustomers = User.objects.filter(is_customer = True)
     allSuppliers = User.objects.filter(is_supplier = True)
+    # for i in 
+    globDebts = []
+    for cust in allCustomers:
+        try:
+            latest_global = Global_Debt.objects.filter(customer=cust).latest('timeOfCreating')
+            globDebts.append([cust, latest_global.debt])
+        except:
+             globDebts.append([cust, 0])
     for i in allCustomers:
-        if Debt.have_not_seen(i):
-            debts.append([i, int(Debt.sumOfEveryUser(i)), False])
-        else:
-            debts.append([i, int(Debt.sumOfEveryUser(i)), True])
+        debts.append([i, int(Debt.sumOfEveryUser(i))])
 
     return render(request, 'work.html',{
         'allCustomers':allCustomers,
-        'debts': debts,
+        'debts': globDebts,
         'allSuppliers': allSuppliers,
-                                                })
+    })
 
 @employee_required
 def customerTables(request, user_id):
-    customer = User.objects.get(id = user_id)
-    tablesUsers = UserTable.objects.filter(user_id = user_id)
-    tableRows = TableItem.objects.all()
-    
-    paginator = Paginator(tablesUsers, 5) # show 10 tables per page
+    user = User.objects.get(id = user_id)
+    tableRows = TableItem.objects.filter(customer=user)  # shat a dandaxacnelu heto
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
 
-    
-    return render(request, 'customerTables.html', {
-        'tables':page_obj,
-        'Rows':tableRows,
-        'customer':customer
-        })
+    tablesbyUser = UserTable.objects.filter(
+        user=user, 
+        singleTable__isnull=True
+        ).order_by('timeOfCreating')  # Reverse the order by 'timeOfCreating'
+    tablePaginator = Paginator(tablesbyUser, 10)  # show 10 tables per page
+    table_page_obj = tablePaginator.get_page(page_number)
+    reversed_table_page_obj = tablePaginator.get_page(
+        tablePaginator.num_pages - table_page_obj.number + 1
+        )  # Reversed table_page_obj
 
-@employee_required
-def customerDebt(request, user_id):
-    customer = User.objects.get(id = user_id)
-        
-    suppliers = User.objects.filter(is_supplier = True)
+    singleTables = UserTable.objects.filter(
+        user= user,
+        singleTable__isnull = False
+    ).order_by('timeOfCreating')
+    singlePaginator = Paginator(singleTables, 1) #show 1 tables per page
+    single_page_obj = singlePaginator.get_page(page_number)
+    reversed_single_page_obj = singlePaginator.get_page(
+        singlePaginator.num_pages - single_page_obj.number + 1
+    )
 
-    customersDept = Debt.objects.filter(customer_id = user_id)
+    joinedTables = JoinedTables.objects.filter(
+        customer=user,
+        ).order_by('timeOfCreating')  # Reverse the order by '-id'
+    joinPaginator = Paginator(joinedTables, 5)  # show 5 joinedTables per page
+    join_page_obj = joinPaginator.get_page(page_number)
+    reversed_join_page_obj = joinPaginator.get_page(
+        joinPaginator.num_pages - join_page_obj.number + 1
+        )  # Reversed join_page_obj
+    reversed_join_page_obj =  reversed_join_page_obj.__reversed__()
 
-    total = int(Debt.sumOfEveryUser(customer))
-    payed = int(Debt.payed(customer))
-    return render(request, 'customersDebt.html', {
-        'customer':customer,
-        'debt_row': customersDept,
-        'Suppliers': suppliers,
-        'total': total,
-        'payed':payed
-    } )
+    joineddebt = Debt.objects.filter(
+        customer = user,
+        joined = True
+        ).order_by('timeOfCreating')
+    joineddebtPaginator = Paginator(joineddebt, 5) #show 5 debts per page of the joined tables
+    joineddebt_page_obj = joineddebtPaginator.get_page(page_number)
+    reversed_joined_debt_obj = joineddebtPaginator.get_page(
+        joineddebtPaginator.num_pages - joineddebt_page_obj.number + 1
+    )
 
-def toggle_seen(request, debt_id):
-    # Get the Debt object based on the debt_id
+    singleddebt = Debt.objects.filter(
+        customer = user,
+        single = True
+        ).order_by('timeOfCreating')
+    singledebtPaginator = Paginator(singleddebt, 1) #show 5 debts per page of the singled tables
+    singledebt_page_obj = singledebtPaginator.get_page(page_number)
+    reversed_single_debt_obj = singledebtPaginator.get_page(
+        singledebtPaginator.num_pages - singledebt_page_obj.number + 1
+    )
+
     try:
-        debt = Debt.objects.get(id=debt_id)
-    except Debt.DoesNotExist:
-        return JsonResponse({'error': 'Debt not found'}, status=404)
-    customer = debt.customer
-    # Toggle the 'seen' field
-    debt.seen = not debt.seen
-    debt.save()
-    total = int(Debt.sumOfEveryUser(customer))
-    payed = int(Debt.payed(customer))
-    # Return the updated 'seen' value and debt amount in the response
-    return JsonResponse({'seen': debt.seen, 'debt': debt.debt,'payed':payed, 'total':total })
+        weekPaymant = Paymant.objects.get(
+            customer = user,
+            date = reversed_single_debt_obj[0].date
+        )
+    except:
+        weekPaymant = Paymant.objects.none()
+    
+    try:
+        week_debt = Week_debt.objects.get(
+            customer = user,
+            date = reversed_single_debt_obj[0].date
+        )
+    except:
+        week_debt = Week_debt.objects.none()
+    
+    try:
+        old_debt = Old_debt.objects.get(
+            customer = user,
+            date = reversed_single_debt_obj[0].date
+        )
+        # print('Hello')
+    except:
+        old_debt = Old_debt.objects.none()
+        # print('Good bye')
+
+    try:
+        globalDebt = Global_Debt.objects.filter(customer = user).latest('timeOfCreating')
+    except:
+        globalDebt = Global_Debt.objects.none()
+        
+    return render(request, 'customerTables.html', {
+        'table': join_page_obj,
+        'tables': reversed_table_page_obj,
+        'joins': reversed_join_page_obj,
+        'Rows': tableRows,
+        'singleTables': reversed_single_page_obj,
+        'joinedDebt': reversed_joined_debt_obj,
+        'singleDebt': reversed_single_debt_obj,
+        'weekPaymant': weekPaymant,
+        'weekDebt': week_debt,
+        'oldDebt': old_debt,
+        'globalDebt': globalDebt,
+        'customer': user
+    })
+
+# @employee_required
+# def customerDebt(request, user_id):
+#     customer = User.objects.get(id = user_id)
+        
+#     suppliers = User.objects.filter(is_supplier = True)
+
+#     customersDept = Debt.objects.filter(customer_id = user_id)
+
+#     total = int(Debt.sumOfEveryUser(customer))
+#     payed = int(Debt.payed(customer))
+#     return render(request, 'customersDebt.html', {
+#         'customer':customer,
+#         'debt_row': customersDept,
+#         'Suppliers': suppliers,
+#         'total': total,
+#         'payed':payed
+#     } )
+
+# def toggle_seen(request, debt_id):
+#     # Get the Debt object based on the debt_id
+#     try:
+#         debt = Debt.objects.get(id=debt_id)
+#     except Debt.DoesNotExist:
+#         return JsonResponse({'error': 'Debt not found'}, status=404)
+#     customer = debt.customer
+#     # Toggle the 'seen' field
+#     debt.seen = not debt.seen
+#     debt.save()
+#     total = int(Debt.sumOfEveryUser(customer))
+#     payed = int(Debt.payed(customer))
+#     # Return the updated 'seen' value and debt amount in the response
+#     return JsonResponse({'seen': debt.seen, 'debt': debt.debt,'payed':payed, 'total':total })
 
 def myOrders(request, supplier_id):
     theSupplier = User.objects.get(id = supplier_id)
     orderedProducts_Tables = Ordered_Products_Table.objects.filter(supplierof_Table = theSupplier)
     columnsOFtable = Ordered_Products_Column.objects.filter(supplierof_table = theSupplier)
-    uniq = ItemsModel.uniqueProductNames()
+    uniq = ItemsModel.uniqueProductNames(theSupplier)
     customers = User.objects.filter(is_customer = True)
-    tableRows = TableItem.objects.all()
+    tableRows = TableItem.objects.filter(supplier_id = supplier_id)
+    print(tableRows.count(), theSupplier)
 
     return render(request, 'myOrders.html', {
         'supplier': theSupplier,
@@ -231,36 +404,16 @@ def myOrders(request, supplier_id):
         'TableRows': tableRows,
     })
 
-def sendSalary(request):
-    if request.method == 'POST':
-        form = SalaryForm(request.POST)
-        if form.is_valid():
-            # Process the form data
-            customer = User.objects.get(username = form.cleaned_data['customer'])
-            date = form.cleaned_data['date']
-            salary = form.cleaned_data['salary']
-            # Perform further actions (e.g., send salary to the selected customer)
-            # ...
 
-            Salary.objects.create(
-                salary = salary,
-                customer = customer,
-                date = date
-            ).save()
-            return redirect('customers')  # Render a success page
-    else:
-        form = SalaryForm()
-    
-    return redirect('customers')
+def totalPage(request):
+    customers = User.objects.filter(is_customer = True)
+    weekDebt = Week_debt.objects.all()
+    for i in weekDebt:
+        print(i.customer)
+    return render(request, 'totalPage.html',{
+        'Customers': customers,
 
-def salaries(request):
-    sal = Salary.objects.all()
-    cust = User.objects.filter(is_customer = True)
-    return render(request, 'customersSalaries.html', {
-        'Sal': sal,
-        'Customers': cust
     })
-
 
 # \\\\\\\\\\\\\\\\\\\\\\\\\\ Employee End   \\\\\\\\\\\\\\\\\\
 
@@ -358,11 +511,11 @@ def supplier(request):
     # products = ItemsModel.objects.filter(supplier = request.user.username)
     orderedProducts_Tables = Ordered_Products_Table.objects.filter(supplierof_Table = request.user)
     columnsOFtable = Ordered_Products_Column.objects.filter(supplierof_table = request.user)
-    uniq = ItemsModel.uniqueProductNames()
+    uniq = ItemsModel.uniqueProductNames(request.user)
     customers = User.objects.filter(is_customer = True)
-    tableRows = TableItem.objects.all()
-
-    paginator = Paginator(orderedProducts_Tables, 3) # show 10 tables per page
+    tableRows = TableItem.objects.filter(supplier = request.user)
+    # print(tableRows.count())
+    paginator = Paginator(orderedProducts_Tables, 3) # show 3 tables per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

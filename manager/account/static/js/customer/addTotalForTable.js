@@ -12,7 +12,7 @@ table.querySelector('#totalPrice').textContent = total;
 
 // Calculate and display the totals
 var table = document.getElementById("debtTable");
-var totalRow = table.rows[table.rows.length - 1];
+var totalRow = table.querySelector("#total-row")
 var cellCount = totalRow.cells.length;
 var columnSums = Array(cellCount).fill(0);
 
@@ -41,13 +41,10 @@ lastRowCells = totalRow.cells.length - 1;
 for (let l = 1; l < table.rows.length - 1; l++) {
     let row = table.rows[l];
     let lastCell = row.cells[lastRowCells];
-    let value = parseInt(lastCell.innerText.replace(' dram', ''));
+    // let value = parseInt(lastCell.innerText.replace(' dram', ''));
     if (!isNaN(value)) {
         lastRowSum += value;
     }
 }
-
-// Display the sum of the last column and the sum of the last row, including the last column, in the last cell of the Total row
-// var lastTotalCell = totalRow.cells[totalRow.cells.length - 1];
-// var lastColumnSum = parseInt(lastTotalCell.innerText.replace(' dram', ''));
-// lastTotalCell.innerText = lastRowSum + "(" + (totalRowCol + lastRowSum) + " dram)";
+totalRow.cells[3].textContent = parseInt(totalRow.cells[1].textContent) + parseInt(totalRow.cells[2].textContent)
+console.log(totalRow.cells[3].textContent, 'hello');

@@ -22,80 +22,203 @@
 
 <main class="container">
 
-    {% for table in tables %}
-        
-          <table id="myTable">
-               </thead>
-                <thead>
-                    <tr>
-                        <th>
-                            Ապրանք
-                        </th>
-                        <th>
-                            Քանակ
-                        </th>
-                        <th>
-                            Գին
-                        </th>
-                        <th>
-                            Ընդհանուր
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for row in Rows %}
-                    {% if table.tableName == row.table.tableName %}
-                        <tr>
-                            <td>
-                                <h3>{{ row.product_name }}</h3>
-                            </td>
-                            <td>
-                                <h3>{{ row.product_count }}</h3>
-                            </td>
-                            <td>
-                                <h3>{{ row.product_price }}</h3>
-                            </td>
-                            <td id="total_price">
-                                <h3>{{ row.total_price }}</h3>
-                            </td>
-                        </tr>
+    <table style="text-align: center;" id="debtTable">
+        <thead style="text-align: center;" id="tablesByUser">
+            <tr>
+                <th>Ամսաթիվ</th>
+                <th>Արտադրամաս</th>
+                <th>Այլ.ապրանք</th>
+                <th>Ընդհանուր</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for debt in joinedDebt %}
+                <tr>
+                    <td>{{debt.date|format_date}}</td>
+                    <td>{{debt.debt}}</td>
+                    {% if singleDebt.0.date|date:"Y-m-d" == debt.date|date:"Y-m-d" %}
+                        <td>{{singleDebt.0.debt}}</td>
+                    {% else %}
+                        <td></td>
                     {% endif %}
-                {% endfor %}
-                </tbody> 
-                <tfoot>
-                    <tr class="footer">
-                      <td colspan="2">{{ table.timeOfCreating|format_datetime }}</td>
-                      <td>Ընդհանուր</td>
-                      <td id="totalPrice"></td>
-                    </tr>
-                  </tfoot>           
-            </table>
-            <br>
-            <br>
-            <br>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            <tr id="total-row">
+                <td>Ընդ</td>
+                <td></td>
+                <td></td>
+                <td style="color: red;"></td>
+            </tr>
+            <tr>
+                <td>Ռոճիկ</td>
+                <td></td>
+                <td></td>
+                <td>{{weekPaymant.salary}}</td>
+            </tr>
+            <tr>
+                <td>Վերադարձ</td>
+                <td></td>
+                <td></td>
+                <td>{{weekPaymant.returned}}</td>
+            </tr>
+            <tr>
+                <td>Գումար</td>
+                <td></td>
+                <td></td>
+                <td>{{weekPaymant.money}}</td>
+            </tr>
+            <tr>
+                <td rowspan="2" style="border-top: 1px solid black;">Մնաց</td>
+                <!-- <td rowspan="2" style="border-top: 1px solid black;"></td> -->
+                <td colspan="2" style="border-top: 1px solid black; color: red;font-size: 18px;">ՀԻն {{oldDebt.debt}}</td>
+                <td rowspan="2" style="border-top: 1px solid black;">{{globalDebt.debt}}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="color: red;font-size: 18px;">Նոր {{weekDebt.debt}}</td>
+            </tr>
+        </tbody>
+    
+    </table>
+    
+    
+    
+    
+    <br><br><br>
+    
+    {% for join in joins %}
+        <table id="myTable">
+            </thead>
+            <thead>
+                <tr>
+                    <th>
+                        Ապրանք
+                    </th>
+                    <th>
+                        Քանակ
+                    </th>
+                    <th>
+                        Գին
+                    </th>
+                    <th>
+                        Ընդհանուր
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for table in tables %}
+                
+                {% if table.joinedTable == join %}
+                    {% for row in Rows %}
+                        {% if table == row.table %}
+                            <tr>
+                                <td>
+                                    <h3>{{ row.product_name }}</h3>
+                                </td>
+                                <td>
+                                    <h3>{{ row.product_count }}</h3>
+                                </td>
+                                <td>
+                                    <h3>{{ row.product_price }}</h3>
+                                </td>
+                                <td id="total_price">
+                                    <h3>{{ row.total_price }}</h3>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            </tbody> 
+            <tfoot>
+                <tr class="footer">
+                    <td colspan="2">{{join.timeOfCreating|format_datetime}}</td>
+                    <td>Total</td>
+                    <td id="totalPrice"></td>
+                </tr>
+            </tfoot>           
+        </table>
+        <br>
+        <br>
+        <br>
     {% endfor %}
 
+{% if singleTables %}
+    <table id="myTable">
+    </thead>
+    <thead>
+        <tr>
+            <th>
+                Ապրանք
+            </th>
+            <th>
+                Քանակ
+            </th>
+            <th>
+                Գին
+            </th>
+            <th>
+                Ընդհանուր
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for table in singleTables %}
+        {% for row in Rows %}
+            {% if table == row.table %}
+                <tr>
+                    <td>
+                        <h3>{{ row.product_name }}</h3>
+                    </td>
+                    <td>
+                        <h3>{{ row.product_count }}</h3>
+                    </td>
+                    <td>
+                        <h3>{{ row.product_price }}</h3>
+                    </td>
+                    <td id="total_price">
+                        <h3>{{ row.total_price }}</h3>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    </tbody> 
+    <tfoot>
+        <tr class="footer">
+            <td colspan="2">{{singleTables.0.timeOfCreating|format_datetime}}</td>
+            <td>Total</td>
+            <td id="totalPrice"></td>
+        </tr>
+    </tfoot>           
+    </table>
+{% endif %}
+    
+    
     <div class="pagination">
         <span class="step-links">
-            {% if tables.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ tables.previous_page_number }}">&lsaquo; prev</a>
+            {% if table.has_previous %}
+                <a href="?page=1">first &laquo;</a>
+                <a href="?page={{ table.previous_page_number }}">prev &lsaquo;</a>
             {% endif %}
-
+    
             <span class="current-page">
-                Page {{ tables.number }} of {{ tables.paginator.num_pages }}
+                Page {{ table.number}} of {{ table.paginator.num_pages }}.
             </span>
-
-            {% if tables.has_next %}
-                <a href="?page={{ tables.next_page_number }}">next &rsaquo;</a>
-                <a href="?page={{ tables.paginator.num_pages }}">last &raquo;</a>
+    
+            {% if table.has_next %}
+                <a href="?page={{ table.next_page_number }}">next &rsaquo;</a>
+                <a href="?page={{ table.paginator.num_pages }}">last &raquo;</a>
             {% endif %}
         </span>
     </div>
 </main>
 
+{% endblock %}
+
+
 {% block 'scripts' %}
-<script>
+<!-- <script>
     // loop through all tables with id 'myTable'
     document.querySelectorAll('table[id^="myTable"]').forEach(function(table) {
     let total = 0;
@@ -106,7 +229,6 @@
     // set the total value in the appropriate #totalPrice cell
     table.querySelector('#totalPrice').textContent = total;
     });
-</script>
-{% endblock %}
-
+</script> -->
+<script src="{% static 'js/customer/addTotalForTable.js'%}"></script>
 {% endblock %}

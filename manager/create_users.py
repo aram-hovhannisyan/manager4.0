@@ -41,20 +41,6 @@ def create_users(customers, customersPasswords):
         customer_user.is_customer = True
         customer_user.save()
 
-    # customer_user = User.objects.create_user(username='Onik', password='onikpassword')
-    # customer_user.is_customer = True
-    # customer_user.save()    
-
-
-
-    # customer_user = User.objects.create_user(username='Arman', password='armanpassword')
-    # customer_user.is_customer = True
-    # customer_user.save()
-
-    # customer_user = User.objects.create_user(username='148', password='148npassword')
-    # customer_user.is_customer = True
-    # customer_user.save()
-
     # Create an employee user
     employee_user = User.objects.create_user(username='Վարդգես', password='vardgespassword1234')
     employee_user.is_employee = True
@@ -69,8 +55,8 @@ def create_users(customers, customersPasswords):
     supplier_user.is_supplier = True
     supplier_user.save()
 
-    # supplier_user = User.objects.create_user(username='Hermine', password='herminepassword')
-    # supplier_user.is_supplier = True
-    # supplier_user.save()
+    supplier_user = User.objects.create_user(username='Այլ.ապրանք', password='aylapranqpassword1793')
+    supplier_user.is_supplier = True
+    supplier_user.save()
     
 create_users(customers, customersPasswords)

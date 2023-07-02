@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 
-from tables.models import ItemsModel, Debt
+from tables.models import ItemsModel, Debt, Paymant
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -70,8 +70,8 @@ class ItemAddForm(forms.ModelForm):
 
 class PaymantForm(forms.ModelForm):
     class Meta:
-        model = Debt
-        fields = ('debt',)
+        model = Paymant
+        fields = ('date','money','returned', 'salary',)
 
 class SalaryForm(forms.Form):
     customer = forms.CharField()

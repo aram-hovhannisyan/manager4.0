@@ -14,7 +14,7 @@
 {% block 'body' %}
     <main class="container">    
 
-        <div class="paymant">
+        <!-- <div class="paymant">
             <form method="post" action="{% url 'paymant' %}">
                 {% csrf_token %}
                 <p style="background-color: #ccc; text-align: center;height: 30px; justify-content: center;display: flex;align-items: center;">Վճարել</p>                   
@@ -38,7 +38,67 @@
                 </label>
                 <button type="submit" id="saveButton" style="font-size: 12px ;">Ուղարկել</button>
             </form>
-        </div>
+        </div> -->
+
+        <div class="table-heading-div">
+            <h1 >Արտադրամաս</h1>
+        </div>  
+        <br>
+        <table class="responsive-table" style="text-align: center;">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">
+                        Ապրանք
+                    </th>
+                    <th style="text-align: center;">
+                        Քանակ
+                    </th>
+                    <th style="text-align: center;">
+                        Գին
+                    </th>
+                    <th style="text-align: center;">
+                        Ընդ...
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for join in joinedSuppliers %}
+                    {% for i in Items %}
+                        {% if i.supplier == join.username %}
+                            {% if i.customer == request.user.username or i.customer == 'all' %}
+                                <tr name="{{join.username}}">
+                                    <td class="productName" id="productName-{{i.id}}">
+                                        {{ i.productName }}
+                                    </td>
+                                    <td class="productCount">
+                                        <input type="number" name="inp" class="input{{i.id}} countInput"
+                                            placeholder="0" value="">
+                                    </td>
+                                    <td data-title='productPrice' class="productPrice">
+                                        {{ i.productPrice }}
+                                    </td>
+                                    <td id="result-{{ i.id }}" class="totalPrice">
+                                        0
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="height: 60px;">
+                    <td style="border-top: 2px solid black;">
+                        <input type="date" id="inputDate" class="inputDate" name="date">
+                    </td>
+                    <td style="border-top: 2px solid black;" colspan="2">
+                        <a href=""><button id="saveButton" class="saveTable" type="button" style="height: 40px;">Ուղարկել</button></a>
+                    </td>
+                    <td style="border-top: 2px solid black;" id="total-sum"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <br><br><br>
 
         {% for supplier in Suppliers %}
             <div class="table-heading-div">
@@ -72,7 +132,7 @@
                                     </td>
                                     <td class="productCount">
                                         <input type="number" name="inp" class="input{{i.id}} countInput"
-                                            placeholder="count of product" value="0">
+                                            placeholder="0" value="">
                                     </td>
                                     <td data-title='productPrice' class="productPrice">
                                         {{ i.productPrice }}
@@ -88,7 +148,7 @@
                 <tfoot>
                     <tr style="height: 60px;">
                         <td style="border-top: 2px solid black;">
-                            <a href=""><button id="saveButton" style="height: 40px;">Ջնջել</button></a>
+                            <input type="date" id="inputDate" class="inputDate" name="date">
                         </td>
                         <td style="border-top: 2px solid black;" colspan="2">
                             <a href=""><button id="saveButton" class="saveTable{{supplier.id}}" type="button" style="height: 40px;">Ուղարկել</button></a>

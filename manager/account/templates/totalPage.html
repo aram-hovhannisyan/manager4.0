@@ -8,29 +8,22 @@
 
 
 {% block 'title' %}
-    <title>Salaries</title>
+    <title>Total</title>
 {% endblock %}
 
 {% block 'body' %}
-
 <table>
     <thead>
         <tr>
-            <th>Ամսաթիվ</th>
-            <th>Հաճախորդ</th>
-            <th>Գումար</th>
+            <th>Անուն</th>
         </tr>
     </thead>
     <tbody>
-        {% for i in Sal %}
+        {% for customer in Customers %}
             <tr>
-                <td style="font-size: 15px;">{{i.date|format_date}}</td>
-                <td>{{i.customer}}</td>
-                <td>{{i.salary}}</td>
+                <td>{{customer.username}}</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-
-
 {% endblock %}
