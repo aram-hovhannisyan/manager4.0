@@ -226,30 +226,38 @@ table tbody tr td:first-child{
 
 .paymant{
   /* background-color: aqua; */
+  background-color: rgba(21, 109, 109, 0.589);
+  border: 1px solid gray;
   margin: auto;
-  width: 70%;
-  height: 150px;
+  width: 300px;
+  height: 350px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 15px;
 
 }
 .paymant input{
   height: 28px;
-}
-
-.paymant form {
-  position: relative;
-  bottom: 50px;
+  width: auto;
+  width: 250px;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
 
 .paymant #saveButton{
-  width: 70px;
-  font-size: 16px;
-  height: 27px;
+  width: 110px;
+  font-size: 20px;
+  height: 35px;
   position: relative;
   top: 2px;
   background-color: aquamarine;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
 
 
@@ -264,34 +272,6 @@ table tbody tr td:first-child{
   border: 2px solid gray;
 }
 
-
-.return{
-  /* background-color: aqua; */
-  margin: auto;
-  width: 70%;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-}
-.return input{
-  height: 28px;
-}
-
-.return form {
-  position: relative;
-  bottom: 50px;
-}
-
-.return #saveButton{
-  width: 70px;
-  font-size: 16px;
-  height: 27px;
-  position: relative;
-  top: 2px;
-  background-color: aquamarine;
-}
 
 .salary{
   width: 300px;

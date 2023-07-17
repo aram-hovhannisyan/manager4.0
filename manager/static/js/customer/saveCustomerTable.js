@@ -26,12 +26,13 @@ function saveTableData() {
   // Get the table body and rows
   const tbody = table.querySelector('tbody');
   const rows = tbody.querySelectorAll('tr');
-
+  const date = table.querySelector('#inputDate').value
   // Create an array to hold the row data
   const rowData = [];
 
   // Variable to hold the total sum
   let totalSum = 0;
+  let mySet = new Set();
 
   // Iterate over each row
   rows.forEach(row => {
@@ -40,20 +41,41 @@ function saveTableData() {
     const productCount = row.querySelector('.countInput').value.trim();
     const productPrice = row.querySelector('.productPrice').textContent.trim();
     const totalPrice = row.querySelector('.totalPrice').textContent.trim();
-
+    const sup = row.getAttribute("name")
+    
+    mySet.add(sup)
+    // console.log(mySet);
     // Create an object with the row data and push it to the array
-    rowData.push({ productName, productCount, productPrice, totalPrice });
+    rowData.push({ 
+      productName,
+      productCount,
+      productPrice, 
+      totalPrice,
+      supplier: sup,
+    });
 
     // Calculate the total sum
     totalSum += parseInt(totalPrice);
   });
-
+  let data = {}
+  if (mySet.size !== 1){
+    data = {
+      data: rowData,
+      'total-sum': totalSum, // Round the total sum to 2 decimal places
+      table_name: ['Table' + `${Math.random()}`.substring(2,10), 'Table' + `${Math.random()}`.substring(2,10)],
+      'date': date
+    };
+  } else{
+    data = {
+      data: rowData,
+      'total-sum': totalSum, // Round the total sum to 2 decimal places
+      table_name: ['Table' + `${Math.random()}`.substring(2,10)],
+      date
+  
+    };
+  }
   // Create the data object to send in the request
-  const data = {
-    data: rowData,
-    'total-sum': totalSum, // Round the total sum to 2 decimal places
-    table_name: 'Table' + `${Math.random()}`.substring(2,10)
-  };
+
 
   // Make a POST request to save the data
   fetch('save-table-data/', {

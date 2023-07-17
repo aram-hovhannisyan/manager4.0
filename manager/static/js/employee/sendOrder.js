@@ -27,6 +27,7 @@ function sendOrder(sup_Id, sup_username) {
       // Handle the success response from the server
       console.log('Order sent successfully');
       // Perform any desired actions after a successful request
+      window.location.reload()
     }
   };
 

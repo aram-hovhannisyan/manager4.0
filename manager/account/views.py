@@ -619,4 +619,4 @@ def supplier(request):
 @supplier_required
 def orderedProducts(request):
     return render(request, 'ordered_Product.html', {})
-# \\\\\\\\\\\\\\\\\\\\\\\\ Supplier End     \\\\\\\\\\\\\\\\\\
+# \\\\\\\\\\\\\\\\\\\\\\\\ Supplier End     \\\\\\\\\\\\\\\\\\  

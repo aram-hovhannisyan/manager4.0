@@ -6,8 +6,7 @@ removeButtons.forEach((button) => {
   let counter = 0
   button.addEventListener('click', (event) => {   
   counter++
-  if (counter == 1){
-    const table = document.getElementById(supplierId)
+  const table = document.getElementById(supplierId)
     const headings = table.querySelectorAll('thead tr th')
       headings.forEach((heading)=>{
         heading.setAttribute('colspan', '1');
@@ -23,10 +22,24 @@ removeButtons.forEach((button) => {
       }
       })
     })
+  if (counter % 2){
     delChilds.forEach((value)=>{
-      let delRow = value.row
+      // let delRow = value.row
       let delCol = value.col
-      delRow.removeChild(delCol)
+      // delRow.removeChild(delCol)
+      delCol.style.display = 'none'
+    })
+  }else{
+      headings.forEach((heading, index)=>{
+        if(index !== 0){
+          heading.setAttribute('colspan', '2');
+        }
+      })
+      delChilds.forEach((value)=>{
+      // let delRow = value.row
+      let delCol = value.col
+      // delRow.removeChild(delCol)
+      delCol.style.display = 'block'
     })
   }
   
