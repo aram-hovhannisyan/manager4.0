@@ -22,6 +22,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
 
+# from datetime import timedelta
+from datetime import datetime, timedelta
+
 from django.shortcuts import redirect
 
 from account.forms import PaymantForm
@@ -36,6 +39,75 @@ def home(request):
     return render(request, 'tables/home.html', {'Items': Items, 'user': User})
 
 
+def Create_old_debt(date, user):
+    dateObject = datetime.strptime(date, "%Y-%m-%d").date() 
+    newUntil = dateObject + timedelta(days=4) 
+    try:
+        Old_debt.objects.get(
+            date = date,
+            customer = user
+        )
+        return
+    except:
+        try:
+            latest_global = Global_Debt.objects.filter(customer=user).latest('timeOfCreating')
+            try:
+                latest_old_debt = Old_debt.objects.filter(customer=user).latest('timeOfCreating')
+                if latest_old_debt.until <= dateObject:
+                    Old_debt.objects.create(
+                        customer = user,
+                        date = date,
+                        debt = latest_global.debt,
+                        until = newUntil
+                    )
+                    # print('created', latest_old_debt.until <= dateObject)
+            except:
+                Old_debt.objects.create(
+                    customer = user,
+                    date = date,
+                    debt = latest_global.debt,
+                    until = newUntil
+                )
+        except:
+            Old_debt.objects.create(
+                customer = user,
+                date = date,
+                debt = 0,
+                until = newUntil
+            )
+
+def create_global_debt(date, user, total):
+    try:
+        latest_global_debt = Global_Debt.objects.filter(customer=user).latest('timeOfCreating')
+        newGlobalDebt = Global_Debt.objects.create(
+            customer = user,
+            date = date,
+            debt = latest_global_debt.debt + total,
+
+        )
+    except:
+        newGlobalDebt = Global_Debt.objects.create(
+            customer = user,
+            date = date,
+            debt = total
+        )
+
+def create_debt(date, user, total, joined = False):
+    if joined:
+        Debt.objects.create(
+            customer = user,
+            joined = True,
+            debt = total,
+            date = date,
+        )
+    else:
+        Debt.objects.create(
+            customer = user,
+            single = True,
+            debt = total,
+            date = date
+        )
+
 @login_required
 @csrf_exempt
 def save_table_data(request):
@@ -47,61 +119,14 @@ def save_table_data(request):
         joinedTables = User.objects.filter(is_supplier=True, username__in=["Կիրովական", "Արտադրամաս"])
 
         if len(table_name) == 1:
-            try:
-                Old_debt.objects.get(
-                    date = date,
-                    customer = request.user
-                )
-            except:
-                try:
-                    latest_global = Global_Debt.objects.filter(customer=request.user).latest('timeOfCreating')
-                    Old_debt.objects.create(
-                        customer = request.user,
-                        date = date,
-                        debt = latest_global.debt
-                    )
-                except:
-                    Old_debt.objects.create(
-                        customer = request.user,
-                        date = date,
-                        debt = 0
-                    )
+            Create_old_debt(date=date, user=request.user)
+
         try:
             SingleTable.objects.get(dateOfCreating = date, customer = request.user)
         except:
-            try:
-                Old_debt.objects.get(
-                    date = date,
-                    customer = request.user
-                )
-            except:
-                try:
-                    latest_global = Global_Debt.objects.filter(customer=request.user).latest('timeOfCreating')
-                    oldDebt = Old_debt.objects.create(
-                        customer = request.user,
-                        date = date,
-                        debt = latest_global.debt
-                    )
-                except:
-                    oldDebt = Old_debt.objects.create(
-                        customer = request.user,
-                        date = date,
-                        debt = 0
-                    )
-        try:
-            latest_global_debt = Global_Debt.objects.filter(customer=request.user).latest('timeOfCreating')
-            # print(latest_global_debt.debt, 'lastest debt')
-            newGlobalDebt = Global_Debt.objects.create(
-                customer = request.user,
-                date = date,
-                debt = latest_global_debt.debt + total
-            )
-        except:
-            newGlobalDebt = Global_Debt.objects.create(
-                customer = request.user,
-                date = date,
-                debt = total
-            )
+            Create_old_debt(date=date, user=request.user)
+
+        create_global_debt(date=date, user=request.user, total=total)
 
         if len(table_name) == 1:
             singleTabUsr = User.objects.filter(is_supplier=True).exclude(username__in=joinedTables.values('username')) 
@@ -156,14 +181,10 @@ def save_table_data(request):
                         table=table,
                         user=request.user
                         )
-            debt = Debt.objects.create(
-                customer = request.user,
-                single = True,
-                debt = total,
-                date = date
-            )  
-            return JsonResponse({'message': 'Table data saved successfully'})
+            create_debt(date=date, user=request.user, total=total, joined = False)
 
+            return JsonResponse({'message': 'Table data saved successfully'})
+        
         mainTable = JoinedTables.objects.create(
             tableName = table_name, 
             customer = request.user,
@@ -176,7 +197,6 @@ def save_table_data(request):
                 joinedTable = mainTable,
                 dateOfCreating = date
             )
-            table.save()
             for row in data:
                 if row['supplier'] == join.username:
                     if row['productCount'] == '':
@@ -218,15 +238,8 @@ def save_table_data(request):
                     user=request.user
                     )
                 
+        create_debt(date=date, user=request.user, total=total, joined=True)
 
-
-
-        debt = Debt.objects.create(
-            customer = request.user,
-            joined = True,
-            debt = total,
-            date = date
-        )   
 
         return JsonResponse({'message': 'Table data saved successfully'})
 
@@ -254,7 +267,7 @@ def Paymant_View(request):
                 date = request.POST.get('date')
             )
 
-            print(request.POST.get('date'), 'dateeee Payyy')
+            # print(request.POST.get('date'), 'dateeee Payyy')
             debt.save()
             return redirect('tablesbyuser')
         return redirect('tablesbyuser')

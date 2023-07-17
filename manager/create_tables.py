@@ -267,7 +267,7 @@ def create_tables(today, create):
 
     print('Tables created successfully!')
 
-create_tables(today = datetime.date.today(), create=True)
-# create_tables(today = datetime.date.today() + datetime.timedelta(days=7), create=False)
-# create_tables(today = datetime.date.today() + datetime.timedelta(days=14), create=False)
-# create_tables(today = datetime.date.today() + datetime.timedelta(days=21), create=False)
+create_tables(today = datetime.date.today(), create=False)
+create_tables(today = datetime.date.today() + datetime.timedelta(days=7), create=False)
+create_tables(today = datetime.date.today() + datetime.timedelta(days=14), create=False)
+create_tables(today = datetime.date.today() + datetime.timedelta(days=21), create=False)

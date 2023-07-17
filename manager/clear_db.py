@@ -5,6 +5,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'manager.settings')
 django.setup()
 from account.models import User
+from tables.models import ItemsModel
 from django.apps import apps
 
 def clear_database():
@@ -12,7 +13,7 @@ def clear_database():
     all_models = apps.get_models()
 
     # Exclude User model
-    excluded_models = [User]
+    excluded_models = [User, ItemsModel]
 
     # Iterate over models and delete records
     for model in all_models:

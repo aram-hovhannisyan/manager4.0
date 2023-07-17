@@ -14,32 +14,6 @@
 {% block 'body' %}
     <main class="container">    
 
-        <!-- <div class="paymant">
-            <form method="post" action="{% url 'paymant' %}">
-                {% csrf_token %}
-                <p style="background-color: #ccc; text-align: center;height: 30px; justify-content: center;display: flex;align-items: center;">Վճարել</p>                   
-                <input type="date" id="inputDate" class="inputDate" name="date">
-                <label>
-                    <p style="background-color: #ccc; text-align: center;"></p>                
-                    <input type="number" name="debt">
-                </label>
-                <button type="submit" id="saveButton" style="font-size: 12px ;">Ուղարկել</button>
-            </form>
-        </div>
-        
-        <div class="return" >
-            <form method="post" action="{% url 'return' %}">
-                {% csrf_token %}
-                <p style="background-color: #ccc; text-align: center;height: 30px; justify-content: center;display: flex;align-items: center;">Վերադարձ</p>                   
-                <input type="date" id="inputDate" class="inputDate" name="date">
-                <label>
-                    <p style="background-color: #ccc; text-align: center;"></p>                   
-                    <input type="number" name="debt">
-                </label>
-                <button type="submit" id="saveButton" style="font-size: 12px ;">Ուղարկել</button>
-            </form>
-        </div> -->
-
         <div class="table-heading-div">
             <h1 >Արտադրամաս</h1>
         </div>  
@@ -161,10 +135,12 @@
         {% endfor %}
     </main>
 
+
+{% endblock %}
+
+
 {% block 'scripts' %}
     <script src="{% static 'js/customer/customer.js' %}"></script>
     <script src="{% static 'js/customer/saveCustomerTable.js' %}"></script>
     <script src="{% static 'js/customer/inputDate.js' %}"></script>
-{% endblock %}
-
 {% endblock %}

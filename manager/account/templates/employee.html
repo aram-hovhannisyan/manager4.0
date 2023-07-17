@@ -17,6 +17,7 @@
         <br>
         <div class="change">
           <button class="remove-Button{{supplier.id}}" id="changeSend">Փոխել</button>
+          <button class="export-Button{{supplier.id}}" id="changeSend">Excel</button>
           <button class="" onclick="sendOrder('{{supplier.id}}','{{supplier.username}}')" id="changeSend">Ուղարկել</button>
         </div>
       </div> 
@@ -43,20 +44,12 @@
               <td>{{product.productName}}</td>
               {% for bigtable in BigTables %}
                 {% if bigtable.supplier.username == supplier.username %}
-                  <td>
                     {% for row in TableRows %}
                       {% if row.product_name == product.productName and row.table == bigtable.table and row.table.user == bigtable.table.user %}
-                        {{ row.product_count }}
+                        <td> {{ row.product_count }}</td>
+                        <td> {{ row.total_price }}</td>
                       {% endif %}
                     {% endfor %}
-                  </td>
-                  <td>
-                    {% for row in TableRows %}
-                      {% if row.product_name == product.productName and row.table == bigtable.table and row.table.user == bigtable.table.user %}
-                        {{ row.total_price }}
-                      {% endif %}
-                    {% endfor %}
-                  </td>
                 {% endif %}
               {% endfor %}
             </tr>
@@ -76,4 +69,8 @@
 <script src="{% static 'tables/addRowsColumns.js'%}"></script>
 <script src="{% static 'js/employee/removeColumns.js' %}"></script>
 <script src="{% static 'js/employee/sendOrder.js' %}"></script>
+<!-- Add the following script after your table code -->
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script src="{% static 'js/employee/toExcel.js' %}"></script>
+
 {% endblock %}

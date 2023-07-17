@@ -1,8 +1,4 @@
 from django.db import models
-# from django.contrib.auth.models import User
-# from django.conf import settings
-# Create your models here.
-
 from account.models import User
 from django.db.models import Q
 
@@ -18,7 +14,6 @@ class ItemsModel(models.Model):
         if supplier:
            return ItemsModel.objects.filter(supplier = supplier).values('productName', 'supplier').distinct()
         return ItemsModel.objects.values('productName', 'supplier').distinct()
-
 
     @staticmethod
     def productsfor_Customer(customer):
@@ -94,17 +89,10 @@ class BigTableRows(models.Model):
     product_name = models.CharField(max_length=50)
     product_count = models.IntegerField(null=True, default=0)
     total_price = models.IntegerField(null=True,default=0)
-    # bigTable = models.ForeignKey(BigTable, on_delete=models.CASCADE)
     table = models.ForeignKey(UserTable, on_delete=models.CASCADE, null=True)
 
     def __str__(self) -> str:
         return f'{self.product_name}-{self.product_count} - {self.user}'
-
-# class Rows_of_ordered_culumns(models.Model):
-#     supplier = models.ForeignKey(User, on_delete=models.CASCADE,related_name='supplier1', null = True)
-#     product_name = models.CharField(max_length=50)
-
-
 
 class Debt(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -112,7 +100,6 @@ class Debt(models.Model):
     single = models.BooleanField(default=False)
     debt = models.IntegerField()
     timeOfCreating = models.DateTimeField(auto_now=True, null=True)
-    # seen = models.BooleanField(default=False, null=True)
     date = models.DateField(null=True)
 
     def sumOfEveryUser(user):
@@ -156,15 +143,10 @@ class Old_debt(models.Model):
     timeOfCreating = models.DateTimeField(auto_now=True)
     date = models.DateField()
     debt = models.IntegerField()
+    until = models.DateField(null=True)
 
-# class Salary(models.Model):
-#     salary = models.IntegerField()
-#     customer = models.ForeignKey(User, on_delete=models.CASCADE)
-#     date = models.DateField()
-
-#     def __str__(self) -> str:
-#         return f"{self.customer}-{self.salary}-{self.date}"
-
+    def __str__(self) -> str:
+        return f"{self.customer.username} --- {self.debt} -- until {self.until}"
 
 class SuppliersProducts(models.Model):
 
@@ -194,29 +176,6 @@ class Ordered_Products_Column(models.Model):
     def __str__(self) -> str:
         return f"{self.parent_Table}"
 
-# class WeekTables(models.Model):
-#     weekStart = models.DateField(auto_now=True)
-#     weekEnd = models.BooleanField(default=False)
-#     weekTable = models.CharField(default="Table", max_length=255)
-#     customerWeek = models.ForeignKey(User, null = True, on_delete=models.CASCADE) 
-
-#     def save(self, *args, **kwargs):
-#         if not self.pk:  # Only update weekTable when creating a new instance
-#             weekTable = "Table" + str(self.getId())
-#             self.weekTable = weekTable
-#         super().save(*args, **kwargs)
-
-#     @staticmethod
-#     def getId():
-#         latest_week = WeekTables.objects.order_by('-id').first()
-#         if latest_week:
-#             return latest_week.id + 1
-#         return 1
-
-#     def __str__(self):
-#         return f"{self.weekTable} -- {self.weekStart} -- {self.id}"
-
-
 class Paymant(models.Model):
     money = models.IntegerField()
     returned = models.IntegerField()
@@ -227,3 +186,4 @@ class Paymant(models.Model):
 
     class Meta:
         ordering = ["-timeOfCreating"]
+

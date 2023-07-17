@@ -16,7 +16,7 @@
     <form method="post" action="{% url 'paymant' %}">
         {% csrf_token %}
         <p style="background-color: #ccc; text-align: center;height: 30px; justify-content: center;display: flex;align-items: center;">Վճարել</p>                   
-        <input type="date" id="inputDate" class="inputDate" name="date"><br><br>
+        <input type="date" id="inputDate" class = '{{defaultDate}}' name="date"><br><br>
         <label>
             <p style="background-color: #ccc; text-align: center;width: 250px;margin: auto;">Գումար</p>                
             <input type="number" value="0" name="money">
@@ -47,13 +47,9 @@
     <tbody>
         {% for debt in joinedDebt %}
             <tr>
-                <td>{{debt.date|format_date}}</td>
-                <td>{{debt.debt}}</td>
-                {% if singleDebt.0.date|date:"Y-m-d" == debt.date|date:"Y-m-d" %}
-                    <td>{{singleDebt.0.debt}}</td>
-                {% else %}
-                    <td></td>
-                {% endif %}
+                <td>{{debt.0}}</td>
+                <td>{{debt.1}}</td>
+                <td>{{debt.2}}</td>
                 <td></td>
             </tr>
         {% endfor %}
@@ -119,33 +115,34 @@
             </tr>
         </thead>
         <tbody>
-        {% for table in tables %}
-            
-            {% if table.joinedTable == join %}
-                {% for row in Rows %}
-                    {% if table == row.table %}
-                        <tr>
-                            <td>
-                                <h3>{{ row.product_name }}</h3>
-                            </td>
-                            <td>
-                                <h3>{{ row.product_count }}</h3>
-                            </td>
-                            <td>
-                                <h3>{{ row.product_price }}</h3>
-                            </td>
-                            <td id="total_price">
-                                <h3>{{ row.total_price }}</h3>
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
-        </tbody> 
+            {% for table in tables %}
+                {% if join == table.joinedTable%}
+                    {% for row in JoinRows %}
+
+                        {% if table == row.table %}
+                            <tr>
+                                <td>
+                                    <h3>{{ row.product_name }}</h3>
+                                </td>
+                                <td>
+                                    <h3>{{ row.product_count }}</h3>
+                                </td>
+                                <td>
+                                    <h3>{{ row.product_price }}</h3>
+                                </td>
+                                <td id="total_price">
+                                    <h3>{{ row.total_price }}</h3>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor%}
+        </tbody>
         <tfoot>
             <tr class="footer">
-                <td colspan="2">{{join.timeOfCreating|format_datetime}}</td>
+                <td>Արտադրամաս</td>
+                <td>{{join.dateOfCreating|format_date}}</td>
                 <td>Total</td>
                 <td id="totalPrice"></td>
             </tr>
@@ -157,54 +154,56 @@
 {% endfor %}
 
 {% if singleTables %}
-<table id="myTable">
-</thead>
-<thead>
-    <tr>
-        <th>
-            Ապրանք
-        </th>
-        <th>
-            Քանակ
-        </th>
-        <th>
-            Գին
-        </th>
-        <th>
-            Ընդհանուր
-        </th>
-    </tr>
-</thead>
-<tbody>
-{% for table in singleTables %}
-    {% for row in Rows %}
-        {% if table == row.table %}
+    {% for table in singleTables %}
+        <table id="myTable">
+        <thead>
             <tr>
-                <td>
-                    <h3>{{ row.product_name }}</h3>
-                </td>
-                <td>
-                    <h3>{{ row.product_count }}</h3>
-                </td>
-                <td>
-                    <h3>{{ row.product_price }}</h3>
-                </td>
-                <td id="total_price">
-                    <h3>{{ row.total_price }}</h3>
-                </td>
+                <th>
+                    Ապրանք
+                </th>
+                <th>
+                    Քանակ
+                </th>
+                <th>
+                    Գին
+                </th>
+                <th>
+                    Ընդհանուր
+                </th>
             </tr>
-        {% endif %}
+        </thead>
+        <tbody>
+            {% for row in SingleRows %}
+                {% if row.table == table %}
+                <tr>
+                    <td>
+                        <h3>{{ row.product_name }}</h3>
+                    </td>
+                    <td>
+                        <h3>{{ row.product_count }}</h3>
+                    </td>
+                    <td>
+                        <h3>{{ row.product_price }}</h3>
+                    </td>
+                    <td id="total_price">
+                        <h3>{{ row.total_price }}</h3>
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="footer">
+                <td>Այլ․Ապրանք</td>
+                <td>{{table.dateOfCreating|format_date}}</td>
+
+                <td>Total</td>
+                <td id="totalPrice"></td>
+            </tr>
+        </tfoot>           
+    </table>
+    <br><br><br>
     {% endfor %}
-{% endfor %}
-</tbody> 
-<tfoot>
-    <tr class="footer">
-        <td colspan="2">{{singleTables.0.timeOfCreating|format_datetime}}</td>
-        <td>Total</td>
-        <td id="totalPrice"></td>
-    </tr>
-</tfoot>           
-</table>
 {% endif %}
 
 <div class="pagination">
@@ -271,6 +270,6 @@
 {% block 'scripts' %}
 
 <script src="{% static 'js/customer/addTotalForTable.js'%}"></script>
-<script src="{% static 'js/customer/inputDate.js' %}"></script>
+<script src="{% static 'js/customer/defaultDate.js' %}"></script>
 
 {% endblock %}

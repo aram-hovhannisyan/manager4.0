@@ -13,17 +13,86 @@
 
 {% block 'body' %}
 <table>
-    <thead>
-        <tr>
-            <th>Անուն</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for customer in Customers %}
+    <table style="text-align: center;" id="debtTable">
+        <thead style="text-align: center;" id="tablesByUser">
             <tr>
-                <td>{{customer.username}}</td>
+                <th>Ամսաթիվ</th>
+                <th>Արտադրամաս</th>
+                <th>Այլ.ապրանք</th>
+                <th>Ընդհանուր</th>
             </tr>
-        {% endfor %}
-    </tbody>
+        </thead>
+        <tbody>
+            {% for debt in joinedDebt %}
+                <tr>
+                    <td>{{debt.0}}</td>
+                    <td>{{debt.1}}</td>
+                    <td>{{debt.2}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            <tr id="total-row">
+                <td>Ընդ</td>
+                <td></td>
+                <td></td>
+                <td style="color: red;"></td>
+            </tr>
+            <tr>
+                <td>Ռոճիկ</td>
+                <td></td>
+                <td></td>
+                <td>{{Salary}}</td>
+            </tr>
+            <tr>
+                <td>Վերադարձ</td>
+                <td></td>
+                <td></td>
+                <td>{{Returned}}</td>
+            </tr>
+            <tr>
+                <td>Գումար</td>
+                <td></td>
+                <td></td>
+                <td>{{Money}}</td>
+            </tr>
+            <tr>
+                <td rowspan="2" style="border-top: 1px solid black;">Մնաց</td>
+                <!-- <td rowspan="2" style="border-top: 1px solid black;"></td> -->
+                <td colspan="2" style="border-top: 1px solid black; color: red;font-size: 18px;">ՀԻն {{OldDebt}}</td>
+                <td rowspan="2" style="border-top: 1px solid black;">{{GlobalDebt}}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="color: red;font-size: 18px;">Նոր {{NewDebt}}</td>
+            </tr>
+        </tbody>
+    
+    </table>
+    
 </table>
+
+
+<div class="pagination">
+    <span class="step-links">
+        {% if table.has_previous %}
+            <a href="?page=1">first &laquo;</a>
+            <a href="?page={{ table.previous_page_number }}">prev &lsaquo;</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ table.number}} of {{ table.paginator.num_pages }}.
+        </span>
+
+        {% if table.has_next %}
+            <a href="?page={{ table.next_page_number }}">next &rsaquo;</a>
+            <a href="?page={{ table.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
+{% endblock %}
+
+{% block 'scripts' %}
+<script src="{% static 'js/customer/addTotalForTable.js'%}"></script>
+
 {% endblock %}
